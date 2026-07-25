@@ -1,21 +1,53 @@
 "use client";
 
-import { Camera, CheckCircle2, Play, Square, XCircle } from "lucide-react";
+import { Camera, CheckCircle2, Play, RefreshCw, Square, XCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 import { verifyQrAttendanceAction } from "@/app/actions/attendance";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+
+type CameraDevice = {
+  id: string;
+  label: string;
+};
+
+type QrScanner = InstanceType<typeof import("html5-qrcode").Html5Qrcode>;
+
+async function clearScanner(scanner: QrScanner | null) {
+  if (!scanner) {
+    return;
+  }
+
+  try {
+    await scanner.stop();
+  } catch {
+    // Scanner may not have finished starting yet.
+  }
+
+  try {
+    scanner.clear();
+  } catch {
+    // The reader element may already be cleared during quick camera switches.
+  }
+}
+
+function cameraLabel(camera: CameraDevice, index: number) {
+  return camera.label || `Camera ${index + 1}`;
+}
 
 export function ScannerPanel() {
   const [active, setActive] = useState(false);
+  const [cameras, setCameras] = useState<CameraDevice[]>([]);
+  const [cameraId, setCameraId] = useState("");
   const [manualPayload, setManualPayload] = useState("");
   const [message, setMessage] = useState("");
   const [ok, setOk] = useState<boolean | null>(null);
   const [isPending, startTransition] = useTransition();
-  const scannerRef = useRef<{ stop: () => Promise<void>; clear: () => void } | null>(null);
+  const scannerRef = useRef<QrScanner | null>(null);
 
   const verifyPayload = useCallback((payload: string) => {
     startTransition(async () => {
@@ -25,12 +57,23 @@ export function ScannerPanel() {
     });
   }, []);
 
+  const switchCamera = useCallback(() => {
+    if (cameras.length < 2) {
+      return;
+    }
+
+    const currentIndex = cameras.findIndex((camera) => camera.id === cameraId);
+    const nextCamera = cameras[(currentIndex + 1) % cameras.length] ?? cameras[0];
+    setCameraId(nextCamera.id);
+  }, [cameraId, cameras]);
+
   useEffect(() => {
     if (!active) {
       return;
     }
 
     let cancelled = false;
+    let scanner: QrScanner | null = null;
 
     async function startScanner() {
       try {
@@ -39,18 +82,33 @@ export function ScannerPanel() {
           return;
         }
 
-        const scanner = new Html5Qrcode("qr-reader");
-        scannerRef.current = scanner;
-        const cameras = await Html5Qrcode.getCameras();
+        const availableCameras = await Html5Qrcode.getCameras();
+        if (cancelled) {
+          return;
+        }
 
-        if (!cameras.length) {
+        setCameras(availableCameras);
+
+        if (!availableCameras.length) {
           setMessage("No camera was detected. Paste a QR payload to verify manually.");
           setOk(false);
           return;
         }
 
+        const selectedCameraId = cameraId || availableCameras[0].id;
+
+        if (!cameraId) {
+          setCameraId(selectedCameraId);
+          return;
+        }
+
+        scanner = new Html5Qrcode("qr-reader");
+        scannerRef.current = scanner;
+        setMessage("");
+        setOk(null);
+
         await scanner.start(
-          cameras[0].id,
+          selectedCameraId,
           { fps: 10, qrbox: { width: 240, height: 240 } },
           (decodedText) => {
             setManualPayload(decodedText);
@@ -69,12 +127,12 @@ export function ScannerPanel() {
 
     return () => {
       cancelled = true;
-      scannerRef.current
-        ?.stop()
-        .then(() => scannerRef.current?.clear())
-        .catch(() => undefined);
+      if (scannerRef.current === scanner) {
+        scannerRef.current = null;
+      }
+      void clearScanner(scanner);
     };
-  }, [active, verifyPayload]);
+  }, [active, cameraId, verifyPayload]);
 
   return (
     <Card>
@@ -102,6 +160,30 @@ export function ScannerPanel() {
             ) : null}
           </div>
           <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <div className="space-y-2">
+                <Label htmlFor="camera">Camera</Label>
+                <Select
+                  id="camera"
+                  value={cameraId}
+                  onChange={(event) => setCameraId(event.target.value)}
+                  disabled={!cameras.length}
+                >
+                  {!cameras.length ? <option value="">No camera detected</option> : null}
+                  {cameras.map((camera, index) => (
+                    <option key={camera.id} value={camera.id}>
+                      {cameraLabel(camera, index)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex items-end">
+                <Button type="button" variant="outline" onClick={switchCamera} disabled={cameras.length < 2}>
+                  <RefreshCw className="size-4" />
+                  Switch Camera
+                </Button>
+              </div>
+            </div>
             <Label htmlFor="payload">Manual QR payload</Label>
             <Textarea
               id="payload"
