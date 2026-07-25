@@ -22,6 +22,7 @@ import {
   HostelBarChart,
 } from "@/components/app/attendance-chart";
 import { KpiCard } from "@/components/app/kpi-card";
+import { ManualAttendanceButton } from "@/components/app/manual-attendance-button";
 import { NotificationsList } from "@/components/app/notifications-list";
 import { ProfileCard } from "@/components/app/profile-card";
 import { QrGenerator } from "@/components/app/qr-generator";
@@ -411,13 +412,14 @@ function StudentsTable({ students }: { students: Student[] }) {
           <TableHead>Department</TableHead>
           <TableHead>Room</TableHead>
           <TableHead>Status</TableHead>
+          <TableHead>Action</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {studentsByYear.map((group) => (
           <Fragment key={group.year}>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
-              <TableCell colSpan={4} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+              <TableCell colSpan={5} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
                 {group.year} Year - {group.students.length} {group.students.length === 1 ? "student" : "students"}
               </TableCell>
             </TableRow>
@@ -429,13 +431,20 @@ function StudentsTable({ students }: { students: Student[] }) {
                 <TableCell>
                   <StatusBadge status={student.todayStatus} />
                 </TableCell>
+                <TableCell>
+                  <ManualAttendanceButton
+                    studentId={student.id}
+                    studentName={student.fullName}
+                    status={student.todayStatus}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </Fragment>
         ))}
         {!students.length ? (
           <TableRow>
-            <TableCell colSpan={4} className="text-center text-slate-500">
+            <TableCell colSpan={5} className="text-center text-slate-500">
               No students found for this hostel.
             </TableCell>
           </TableRow>

@@ -2,13 +2,19 @@
 
 import { revalidatePath } from "next/cache";
 
-import { ATTENDANCE_WINDOW } from "@/lib/constants";
+import { ATTENDANCE_WINDOW, WARDEN_ROLES } from "@/lib/constants";
 import { createQrPayload, encodeQrPayload, parseQrPayload, verifyQrPayload } from "@/lib/qr";
 import {
   createSupabaseServerClient,
   hasSupabaseEnv,
 } from "@/lib/supabase/server";
 import { qrScanSchema } from "@/lib/validations";
+
+export type AttendanceActionResult = {
+  ok: boolean;
+  message: string;
+  studentName?: string;
+};
 
 export type QrActionResult = {
   ok: boolean;
@@ -174,4 +180,106 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
   revalidatePath("/reports");
 
   return { ok: true, message: `${studentName} has presented.`, studentName };
+}
+
+export async function markManualAttendancePresentAction(
+  studentId: string,
+): Promise<AttendanceActionResult> {
+  const trimmedStudentId = studentId.trim();
+
+  if (!trimmedStudentId) {
+    return { ok: false, message: "Student is required." };
+  }
+
+  if (!hasSupabaseEnv()) {
+    return { ok: false, message: "Supabase environment variables are required to mark attendance." };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { ok: false, message: "Only signed-in wardens can mark manual attendance." };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("id, role, hostel_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !WARDEN_ROLES.includes(profile.role)) {
+    return { ok: false, message: "Only wardens can mark manual attendance." };
+  }
+
+  if (!profile.hostel_id) {
+    return { ok: false, message: "Warden hostel assignment is missing." };
+  }
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, full_name, hostel_id")
+    .eq("id", trimmedStudentId)
+    .single();
+
+  if (!student) {
+    return { ok: false, message: "Student was not found in this hostel." };
+  }
+
+  if (student.hostel_id !== profile.hostel_id) {
+    return { ok: false, message: "This student is not assigned to your hostel." };
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date().toISOString();
+  const studentName = student.full_name ?? "Student";
+
+  const { data: existing } = await supabase
+    .from("attendance")
+    .select("id, status")
+    .eq("student_id", trimmedStudentId)
+    .eq("attendance_date", today)
+    .maybeSingle();
+
+  if (existing?.status === "present") {
+    return { ok: true, message: `${studentName} is already present today.`, studentName };
+  }
+
+  const attendanceMutation = existing
+    ? supabase
+        .from("attendance")
+        .update({
+          check_in_time: now,
+          status: "present",
+          verified_by: user.id,
+        })
+        .eq("id", existing.id)
+    : supabase.from("attendance").insert({
+        student_id: trimmedStudentId,
+        attendance_date: today,
+        check_in_time: now,
+        status: "present",
+        verified_by: user.id,
+      });
+
+  const { error: attendanceError } = await attendanceMutation;
+
+  if (attendanceError) {
+    return { ok: false, message: attendanceError.message, studentName };
+  }
+
+  await supabase.from("attendance_logs").insert({
+    actor_id: user.id,
+    student_id: trimmedStudentId,
+    action: existing ? "manual_attendance_present_updated" : "manual_attendance_present_created",
+    metadata: { attendance_date: today },
+  });
+
+  revalidatePath("/warden");
+  revalidatePath("/scanner");
+  revalidatePath("/reports");
+
+  return { ok: true, message: `${studentName} marked present manually.`, studentName };
 }
