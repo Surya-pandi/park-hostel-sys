@@ -51,37 +51,37 @@ export function QrGenerator() {
       </CardHeader>
       <CardContent>
         <div className="grid gap-5 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-6">
-          <div className="grid place-items-center rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+          <div className="grid place-items-center rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
             {result?.payload ? (
               <QRCodeSVG
                 value={result.payload}
                 size={384}
                 level="H"
                 includeMargin
-                className="h-auto w-full max-w-96"
+                className="h-auto w-full max-w-80 sm:max-w-96"
               />
             ) : (
-              <div className="grid aspect-square w-full max-w-96 place-items-center rounded-md bg-slate-100 text-sm text-slate-500 dark:bg-slate-800">
+              <div className="grid aspect-square w-full max-w-80 place-items-center rounded-md bg-slate-100 text-sm text-slate-500 dark:bg-slate-800 sm:max-w-96">
                 {isPending ? "Generating QR..." : "QR unavailable"}
               </div>
             )}
           </div>
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+            <div className="grid gap-3 min-[420px]:grid-cols-3">
+              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800 sm:p-4">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Expires in</p>
                 <p className="mt-1 text-2xl font-semibold">{secondsLeft}s</p>
               </div>
-              <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800 sm:p-4">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Single use</p>
                 <p className="mt-1 text-2xl font-semibold">Yes</p>
               </div>
-              <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-800">
+              <div className="rounded-lg border border-slate-200 p-3 dark:border-slate-800 sm:p-4">
                 <p className="text-sm text-slate-500 dark:text-slate-400">Per day</p>
                 <p className="mt-1 text-2xl font-semibold">Once</p>
               </div>
             </div>
-            <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-100">
+            <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-900 dark:bg-blue-950 dark:text-blue-100 sm:p-4">
               <div className="flex gap-2">
                 <ShieldCheck className="mt-0.5 size-4 shrink-0" />
                 <p>
@@ -95,7 +95,7 @@ export function QrGenerator() {
                 {result.message}
               </p>
             ) : null}
-            <Button type="button" onClick={refreshQr} disabled={isPending}>
+            <Button type="button" className="w-full sm:w-auto" onClick={refreshQr} disabled={isPending}>
               <RefreshCw className="size-4" />
               Refresh QR
             </Button>

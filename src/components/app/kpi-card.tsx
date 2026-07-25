@@ -23,15 +23,15 @@ const toneClasses = {
 export function KpiCard({ label, value, helper, icon: Icon, tone = "blue" }: KpiCardProps) {
   return (
     <Card>
-      <CardContent className="flex items-start justify-between gap-4 p-5">
+      <CardContent className="flex items-start justify-between gap-3 p-4 sm:gap-4 sm:p-5">
         <div className="min-w-0">
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-          <p className="mt-2 text-3xl font-semibold tracking-normal text-slate-950 dark:text-white">
+          <p className="mt-2 break-words text-2xl font-semibold tracking-normal text-slate-950 dark:text-white sm:text-3xl">
             {value}
           </p>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{helper}</p>
         </div>
-        <span className={cn("rounded-md p-2", toneClasses[tone])}>
+        <span className={cn("shrink-0 rounded-md p-2", toneClasses[tone])}>
           <Icon className="size-5" />
         </span>
       </CardContent>

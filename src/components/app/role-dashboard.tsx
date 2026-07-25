@@ -79,8 +79,8 @@ export function StudentDashboard({ data }: { data: StudentDashboardData }) {
     } satisfies Profile);
 
   return (
-    <div className="space-y-5">
-      <AnimatedSection className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-4 sm:space-y-5">
+      <AnimatedSection className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <KpiCard
           label="Attendance Percentage"
           value={`${student.attendancePercentage}%`}
@@ -111,12 +111,12 @@ export function StudentDashboard({ data }: { data: StudentDashboardData }) {
         />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.05} className="grid gap-5 xl:grid-cols-[1.15fr_0.85fr]">
+      <AnimatedSection delay={0.05} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <QrGenerator />
         <ProfileCard profile={cardProfile} student={student} />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.1} className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <AnimatedSection delay={0.1} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         <Card>
           <CardHeader>
             <CardTitle>Attendance History</CardTitle>
@@ -136,8 +136,8 @@ export function WardenDashboard({ data }: { data: WardenDashboardData }) {
   const present = data.students.filter(isPresentToday).length;
 
   return (
-    <div className="space-y-5">
-      <AnimatedSection className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-4 sm:space-y-5">
+      <AnimatedSection className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <KpiCard
           label="Hostel Students"
           value={`${data.analytics.totalStudents}`}
@@ -176,7 +176,7 @@ export function WardenDashboard({ data }: { data: WardenDashboardData }) {
         <ScannerPanel />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.15} className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <AnimatedSection delay={0.15} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         <Card>
           <CardHeader>
             <CardTitle>{data.hostel} Students</CardTitle>
@@ -198,8 +198,8 @@ export function AoDashboard({ data }: { data: OfficeDashboardData }) {
   const presentToday = data.hostelAnalytics.reduce((sum, item) => sum + item.presentToday, 0);
 
   return (
-    <div className="space-y-5">
-      <AnimatedSection className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-4 sm:space-y-5">
+      <AnimatedSection className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <KpiCard
           label="Overall Attendance"
           value={`${percent(presentToday, totalStudents)}%`}
@@ -230,7 +230,7 @@ export function AoDashboard({ data }: { data: OfficeDashboardData }) {
         />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.05} className="grid gap-5 xl:grid-cols-2">
+      <AnimatedSection delay={0.05} className="grid gap-4 sm:gap-5 xl:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Hostel Analytics</CardTitle>
@@ -266,8 +266,8 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
   ).length;
 
   return (
-    <div className="space-y-5">
-      <AnimatedSection className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-4 sm:space-y-5">
+      <AnimatedSection className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
         <KpiCard
           label="Complete Analytics"
           value={`${percent(presentToday, totalStudents)}%`}
@@ -298,7 +298,7 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
         />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.05} className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
+      <AnimatedSection delay={0.05} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
         <Card>
           <CardHeader>
             <CardTitle>Attendance Trends</CardTitle>
@@ -311,7 +311,7 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
         <HeatmapCard hostels={data.hostelAnalytics} />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.1} className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <AnimatedSection delay={0.1} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         <ReportExportPanel rows={data.reportRows} />
         <NotificationsList items={data.notifications} />
       </AnimatedSection>
@@ -345,12 +345,9 @@ function YearWisePresentDashboard({ students }: { students: Student[] }) {
       </CardHeader>
       <CardContent>
         {students.length ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {groups.map((group) => (
-              <div
-                key={group.year}
-                className="rounded-lg border border-slate-200 p-4 dark:border-slate-800"
-              >
+              <div key={group.year} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800 sm:p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="font-semibold">{group.year} Year</p>
@@ -560,7 +557,7 @@ function HeatmapCard({ hostels }: { hostels: HostelAnalytics[] }) {
       </CardHeader>
       <CardContent>
         {cells.length ? (
-          <div className="grid grid-cols-6 gap-2">
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
             {cells.map((cell) => (
               <div
                 key={cell.key}

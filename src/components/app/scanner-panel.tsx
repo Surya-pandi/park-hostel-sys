@@ -198,14 +198,19 @@ export function ScannerPanel() {
               Warden camera stays active while validating signature, expiry, single use, and duplicate rules.
             </CardDescription>
           </div>
-          <Button type="button" variant={active ? "destructive" : "default"} onClick={() => setActive(!active)}>
+          <Button
+            type="button"
+            className="w-full sm:w-auto"
+            variant={active ? "destructive" : "default"}
+            onClick={() => setActive(!active)}
+          >
             {active ? <Square className="size-4" /> : <Play className="size-4" />}
             {active ? "Stop" : "Start Camera"}
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,420px)_1fr]">
-            <div className="grid min-h-80 place-items-center rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 sm:min-h-[28rem]">
+            <div className="grid min-h-72 place-items-center rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 sm:min-h-[28rem]">
               <div id="qr-reader" className="w-full max-w-md" />
               {!active ? (
                 <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
@@ -233,7 +238,13 @@ export function ScannerPanel() {
                   </Select>
                 </div>
                 <div className="flex items-end">
-                  <Button type="button" variant="outline" onClick={switchCamera} disabled={cameras.length < 2}>
+                  <Button
+                    type="button"
+                    className="w-full sm:w-auto"
+                    variant="outline"
+                    onClick={switchCamera}
+                    disabled={cameras.length < 2}
+                  >
                     <RefreshCw className="size-4" />
                     Switch Camera
                   </Button>
@@ -248,6 +259,7 @@ export function ScannerPanel() {
               />
               <Button
                 type="button"
+                className="w-full sm:w-auto"
                 onClick={() => verifyPayload(manualPayload)}
                 disabled={isPending || !manualPayload}
               >

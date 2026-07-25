@@ -32,9 +32,10 @@ export function ManualAttendanceButton({
   }
 
   return (
-    <div className="min-w-32 space-y-1">
+    <div className="min-w-28 space-y-1 sm:min-w-32">
       <Button
         type="button"
+        className="w-full whitespace-nowrap"
         size="sm"
         variant={alreadyRecorded ? "outline" : "default"}
         onClick={markPresent}

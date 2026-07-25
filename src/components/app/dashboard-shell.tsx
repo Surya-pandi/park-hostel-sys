@@ -34,12 +34,12 @@ export function DashboardShell({
   const navigation = NAVIGATION.filter((item) => item.roles.includes(role));
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-50">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-50">
       <RealtimeRefresh />
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex min-h-16 items-center gap-3 px-3 py-2 sm:px-6 lg:px-8">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
-            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-blue-600 text-white">
+          <Link href="/" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-md bg-blue-600 text-white sm:size-10">
               <QrCode className="size-5" />
             </span>
             <span className="min-w-0">
@@ -49,7 +49,7 @@ export function DashboardShell({
               </span>
             </span>
           </Link>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <Badge variant="muted" className="hidden sm:inline-flex">
               {roleMeta.label}
             </Badge>
@@ -101,12 +101,12 @@ export function DashboardShell({
           </div>
         </aside>
 
-        <main className="min-w-0 px-3 py-5 sm:px-6 lg:px-8">
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+          <div className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <p className="text-sm font-medium text-blue-600 dark:text-blue-300">{roleMeta.label}</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-normal sm:text-3xl">{title}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500 dark:text-slate-400">
+              <h1 className="mt-1 text-xl font-semibold tracking-normal sm:text-3xl">{title}</h1>
+              <p className="mt-2 max-w-3xl text-sm leading-5 text-slate-500 dark:text-slate-400 sm:leading-6">
                 {description}
               </p>
             </div>

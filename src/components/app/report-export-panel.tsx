@@ -162,7 +162,7 @@ export function ReportExportPanel({
             </Select>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid gap-2 min-[420px]:grid-cols-3 sm:flex sm:flex-wrap">
           <Button type="button" variant="outline" onClick={exportCsv} disabled={!filteredRows.length}>
             <Download className="size-4" />
             CSV

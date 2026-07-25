@@ -15,7 +15,7 @@ const statusClasses = {
 export function AttendanceCalendar({ days }: { days: CalendarDay[] }) {
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4">
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <CardTitle>Attendance Calendar</CardTitle>
         <div className="flex flex-wrap gap-2">
           <StatusBadge status="Present" />
@@ -25,18 +25,18 @@ export function AttendanceCalendar({ days }: { days: CalendarDay[] }) {
       </CardHeader>
       <CardContent>
         {days.length ? (
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {days.map((day) => (
               <div
                 key={day.date}
                 className={cn(
-                  "flex aspect-square min-h-12 flex-col justify-between rounded-md border p-2 text-xs",
+                  "flex aspect-square min-h-10 flex-col justify-between rounded-md border p-1 text-[10px] sm:min-h-12 sm:p-2 sm:text-xs",
                   statusClasses[day.status],
                 )}
                 title={`${format(new Date(day.date), "dd MMM yyyy")} - ${day.status}`}
               >
                 <span className="font-semibold">{format(new Date(day.date), "dd")}</span>
-                <span className="truncate">{day.status}</span>
+                <span className="truncate max-sm:hidden">{day.status}</span>
               </div>
             ))}
           </div>

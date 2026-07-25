@@ -17,14 +17,14 @@ export function ProfileCard({ profile, student }: ProfileCardProps) {
         <CardTitle>Profile</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-5">
           <div className="grid size-20 shrink-0 place-items-center rounded-lg bg-blue-600 text-2xl font-semibold text-white">
             {profile.avatarInitials}
           </div>
           <div className="min-w-0 flex-1 space-y-4">
             <div>
-              <h2 className="text-xl font-semibold">{student?.fullName ?? profile.fullName}</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
+              <h2 className="break-words text-lg font-semibold sm:text-xl">{student?.fullName ?? profile.fullName}</h2>
+              <p className="break-words text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Badge>{profile.role}</Badge>
                 {profile.forcePasswordChange ? <Badge variant="warning">Password change required</Badge> : null}
