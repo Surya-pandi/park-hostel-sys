@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   Activity,
   BedDouble,
@@ -43,6 +44,7 @@ import type {
   StudentDashboardData,
   WardenDashboardData,
 } from "@/lib/live-data";
+import { YEARS } from "@/lib/constants";
 import {
   AttendanceRecord,
   HostelAnalytics,
@@ -130,9 +132,7 @@ export function StudentDashboard({ data }: { data: StudentDashboardData }) {
 }
 
 export function WardenDashboard({ data }: { data: WardenDashboardData }) {
-  const present = data.students.filter((student) =>
-    student.todayStatus === "Present" || student.todayStatus === "Late"
-  ).length;
+  const present = data.students.filter(isPresentToday).length;
 
   return (
     <div className="space-y-5">
@@ -168,14 +168,18 @@ export function WardenDashboard({ data }: { data: WardenDashboardData }) {
       </AnimatedSection>
 
       <AnimatedSection delay={0.05}>
+        <YearWisePresentDashboard students={data.students} />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.1}>
         <ScannerPanel />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.1} className="grid gap-5 xl:grid-cols-[1fr_420px]">
+      <AnimatedSection delay={0.15} className="grid gap-5 xl:grid-cols-[1fr_420px]">
         <Card>
           <CardHeader>
             <CardTitle>{data.hostel} Students</CardTitle>
-            <CardDescription>Roster from Supabase with room and attendance state.</CardDescription>
+            <CardDescription>Roster from Supabase grouped by academic year.</CardDescription>
           </CardHeader>
           <CardContent>
             <StudentsTable students={data.students} />
@@ -314,7 +318,91 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
   );
 }
 
+function isPresentToday(student: Student) {
+  return student.todayStatus === "Present" || student.todayStatus === "Late";
+}
+
+function YearWisePresentDashboard({ students }: { students: Student[] }) {
+  const groups = YEARS.map((year) => {
+    const yearStudents = students.filter((student) => student.year === year);
+    const presentStudents = yearStudents.filter(isPresentToday);
+
+    return {
+      year,
+      total: yearStudents.length,
+      present: presentStudents.length,
+      presentStudents,
+      attendanceRate: percent(presentStudents.length, yearStudents.length),
+    };
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Year Wise Present Students</CardTitle>
+        <CardDescription>Present and late scans grouped by academic year.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {students.length ? (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {groups.map((group) => (
+              <div
+                key={group.year}
+                className="rounded-lg border border-slate-200 p-4 dark:border-slate-800"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-semibold">{group.year} Year</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {group.total} {group.total === 1 ? "student" : "students"}
+                    </p>
+                  </div>
+                  <Badge variant={group.present ? "success" : "muted"}>
+                    {group.present}/{group.total}
+                  </Badge>
+                </div>
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-slate-500 dark:text-slate-400">Present today</span>
+                    <span className="font-medium">{group.attendanceRate}%</span>
+                  </div>
+                  <Progress value={group.attendanceRate} />
+                </div>
+                <div className="mt-4 space-y-2">
+                  {group.presentStudents.length ? (
+                    <>
+                      {group.presentStudents.slice(0, 3).map((student) => (
+                        <div key={student.id} className="truncate text-sm font-medium">
+                          {student.fullName}
+                        </div>
+                      ))}
+                      {group.presentStudents.length > 3 ? (
+                        <Badge variant="muted">+{group.presentStudents.length - 3} more</Badge>
+                      ) : null}
+                    </>
+                  ) : (
+                    <p className="text-sm text-slate-500 dark:text-slate-400">No present students yet.</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-lg border border-slate-200 p-4 text-sm text-slate-500 dark:border-slate-800">
+            No students found for this hostel.
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 function StudentsTable({ students }: { students: Student[] }) {
+  const studentsByYear = YEARS.map((year) => ({
+    year,
+    students: students.filter((student) => student.year === year),
+  })).filter((group) => group.students.length > 0);
+
   return (
     <Table>
       <TableHeader>
@@ -326,15 +414,24 @@ function StudentsTable({ students }: { students: Student[] }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {students.map((student) => (
-          <TableRow key={student.id}>
-            <TableCell className="font-medium">{student.fullName}</TableCell>
-            <TableCell>{student.department}</TableCell>
-            <TableCell>{student.roomNumber}</TableCell>
-            <TableCell>
-              <StatusBadge status={student.todayStatus} />
-            </TableCell>
-          </TableRow>
+        {studentsByYear.map((group) => (
+          <Fragment key={group.year}>
+            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
+              <TableCell colSpan={4} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                {group.year} Year - {group.students.length} {group.students.length === 1 ? "student" : "students"}
+              </TableCell>
+            </TableRow>
+            {group.students.map((student) => (
+              <TableRow key={student.id}>
+                <TableCell className="font-medium">{student.fullName}</TableCell>
+                <TableCell>{student.department}</TableCell>
+                <TableCell>{student.roomNumber}</TableCell>
+                <TableCell>
+                  <StatusBadge status={student.todayStatus} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </Fragment>
         ))}
         {!students.length ? (
           <TableRow>

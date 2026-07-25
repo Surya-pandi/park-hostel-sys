@@ -6,7 +6,7 @@ Production-ready Next.js 16 application for PARK COLLEGE OF ENGINEERING AND TECH
 
 - Role-based dashboards for Student, four hostel Wardens, AO, and Director
 - Supabase Auth and PostgreSQL-ready data access
-- Dynamic signed QR attendance with 30-second expiry, nonce, UUID, and HMAC signature
+- Dynamic signed QR attendance with 60-second expiry, nonce, UUID, and HMAC signature
 - Server-side scan verification, single-use token flow, and one-attendance-per-day rule
 - Supabase RLS policies for students, wardens, AO, and director
 - Realtime-ready dashboard data model

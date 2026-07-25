@@ -40,7 +40,7 @@ function cameraLabel(camera: CameraDevice, index: number) {
 }
 
 export function ScannerPanel() {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(true);
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
   const [cameraId, setCameraId] = useState("");
   const [manualPayload, setManualPayload] = useState("");
@@ -48,6 +48,7 @@ export function ScannerPanel() {
   const [ok, setOk] = useState<boolean | null>(null);
   const [isPending, startTransition] = useTransition();
   const scannerRef = useRef<QrScanner | null>(null);
+  const lastScanRef = useRef<string | null>(null);
 
   const verifyPayload = useCallback((payload: string) => {
     startTransition(async () => {
@@ -104,16 +105,21 @@ export function ScannerPanel() {
 
         scanner = new Html5Qrcode("qr-reader");
         scannerRef.current = scanner;
+        lastScanRef.current = null;
         setMessage("");
         setOk(null);
 
         await scanner.start(
           selectedCameraId,
-          { fps: 10, qrbox: { width: 240, height: 240 } },
+          { fps: 10, qrbox: { width: 300, height: 300 } },
           (decodedText) => {
+            if (lastScanRef.current === decodedText) {
+              return;
+            }
+
+            lastScanRef.current = decodedText;
             setManualPayload(decodedText);
             verifyPayload(decodedText);
-            setActive(false);
           },
           () => undefined,
         );
@@ -140,7 +146,7 @@ export function ScannerPanel() {
         <div>
           <CardTitle>Live QR Scanner</CardTitle>
           <CardDescription>
-            Warden scan flow validates signature, expiry, single use, and daily duplicate rules.
+            Warden camera stays active while validating signature, expiry, single use, and duplicate rules.
           </CardDescription>
         </div>
         <Button type="button" variant={active ? "destructive" : "default"} onClick={() => setActive(!active)}>
@@ -149,9 +155,9 @@ export function ScannerPanel() {
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
-          <div className="grid min-h-72 place-items-center rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900">
-            <div id="qr-reader" className="w-full max-w-sm" />
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,420px)_1fr]">
+          <div className="grid min-h-80 place-items-center rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 sm:min-h-[28rem]">
+            <div id="qr-reader" className="w-full max-w-md" />
             {!active ? (
               <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
                 <Camera className="size-8" />
@@ -199,9 +205,21 @@ export function ScannerPanel() {
               Verify Attendance
             </Button>
             {message ? (
-              <div className={ok ? "flex items-center gap-2 text-sm text-emerald-600" : "flex items-center gap-2 text-sm text-rose-600"}>
-                {ok ? <CheckCircle2 className="size-4" /> : <XCircle className="size-4" />}
-                {message}
+              <div
+                aria-live="polite"
+                className={
+                  ok
+                    ? "rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-200"
+                    : "rounded-lg border border-rose-200 bg-rose-50 p-3 text-rose-700 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-200"
+                }
+              >
+                <div className="flex items-start gap-2">
+                  {ok ? <CheckCircle2 className="mt-0.5 size-4 shrink-0" /> : <XCircle className="mt-0.5 size-4 shrink-0" />}
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-current">Latest scan</p>
+                    <p className="mt-1 text-sm font-medium">{message}</p>
+                  </div>
+                </div>
               </div>
             ) : null}
           </div>

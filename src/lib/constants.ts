@@ -51,14 +51,14 @@ export const DEPARTMENTS = [
 
 export const YEARS = ["I", "II", "III", "IV"] as const;
 
-export const SHARING_OPTIONS = ["Single", "2 Sharing", "3 Sharing", "4 Sharing"] as const;
+export const SHARING_OPTIONS = ["Single", "2 Sharing", "3 Sharing", "4 Sharing", "12 Sharing"] as const;
 
-export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as const;
+export const BLOOD_GROUPS = ["A+", "A1+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"] as const;
 
 export const ATTENDANCE_WINDOW = {
   start: "06:00",
   end: "08:00",
-  expirySeconds: 30,
+  expirySeconds: 60,
 };
 
 export const REPORT_TYPES = [

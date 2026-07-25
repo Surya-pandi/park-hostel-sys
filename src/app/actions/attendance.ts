@@ -121,6 +121,17 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
     return { ok: false, message: "QR token has already been used." };
   }
 
+  if (tokenRow.student_id !== payload.studentId) {
+    return { ok: false, message: "QR token does not match the scanned student." };
+  }
+
+  const { data: studentRow } = await supabase
+    .from("students")
+    .select("full_name")
+    .eq("id", tokenRow.student_id)
+    .single();
+  const studentName = studentRow?.full_name ?? "Student";
+
   const { data: existing } = await supabase
     .from("attendance")
     .select("id")
@@ -129,7 +140,7 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
     .maybeSingle();
 
   if (existing) {
-    return { ok: false, message: "Attendance was already marked today." };
+    return { ok: false, message: `${studentName} has already presented today.` };
   }
 
   const { error: attendanceError } = await supabase.from("attendance").insert({
@@ -158,7 +169,8 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
   });
 
   revalidatePath("/warden");
+  revalidatePath("/scanner");
   revalidatePath("/reports");
 
-  return { ok: true, message: "Attendance marked successfully." };
+  return { ok: true, message: `${studentName} has presented.` };
 }
