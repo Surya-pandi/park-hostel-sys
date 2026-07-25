@@ -13,6 +13,7 @@ import { qrScanSchema } from "@/lib/validations";
 export type QrActionResult = {
   ok: boolean;
   message: string;
+  studentName?: string;
   payload?: string;
   expiresAt?: string;
   windowOpen?: boolean;
@@ -140,7 +141,7 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
     .maybeSingle();
 
   if (existing) {
-    return { ok: false, message: `${studentName} has already presented today.` };
+    return { ok: false, message: `${studentName} has already presented today.`, studentName };
   }
 
   const { error: attendanceError } = await supabase.from("attendance").insert({
@@ -172,5 +173,5 @@ export async function verifyQrAttendanceAction(rawPayload: string) {
   revalidatePath("/scanner");
   revalidatePath("/reports");
 
-  return { ok: true, message: `${studentName} has presented.` };
+  return { ok: true, message: `${studentName} has presented.`, studentName };
 }
