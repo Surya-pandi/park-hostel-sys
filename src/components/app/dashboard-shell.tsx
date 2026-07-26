@@ -38,7 +38,7 @@ export function DashboardShell({
       <RealtimeRefresh />
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex min-h-16 items-center gap-3 px-3 py-2 sm:px-6 lg:px-8">
-          <Link href="/" className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3" aria-label={APP_NAME}>
             <span className="grid size-9 shrink-0 place-items-center rounded-md bg-blue-600 text-white sm:size-10">
               <QrCode className="size-5" />
             </span>
@@ -48,7 +48,7 @@ export function DashboardShell({
                 {APP_NAME}
               </span>
             </span>
-          </Link>
+          </div>
           <div className="flex shrink-0 items-center gap-2">
             <Badge variant="muted" className="hidden sm:inline-flex">
               {roleMeta.label}
