@@ -39,6 +39,7 @@ export type AttendanceRecord = {
   id: string;
   studentId: string;
   studentName: string;
+  year: AcademicYear;
   department: Department;
   hostel: HostelName;
   roomNumber: string;

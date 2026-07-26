@@ -54,6 +54,7 @@ export function ReportExportPanel({
     return filteredRows.map((row) => ({
       Date: formatDate(row.date),
       Student: row.studentName,
+      Year: row.year,
       Department: row.department,
       Hostel: row.hostel,
       Room: row.roomNumber,
@@ -64,7 +65,7 @@ export function ReportExportPanel({
 
   function exportCsv() {
     const matrix = toMatrix();
-    const header = Object.keys(matrix[0] ?? { Date: "", Student: "", Department: "", Hostel: "", Room: "", Status: "", Percentage: "" });
+    const header = Object.keys(matrix[0] ?? { Date: "", Student: "", Year: "", Department: "", Hostel: "", Room: "", Status: "", Percentage: "" });
     const body = matrix.map((row) =>
       header.map((key) => JSON.stringify(row[key as keyof typeof row] ?? "")).join(","),
     );
@@ -74,7 +75,7 @@ export function ReportExportPanel({
   function exportExcel() {
     const matrix = toMatrix();
     const headers = Object.keys(
-      matrix[0] ?? { Date: "", Student: "", Department: "", Hostel: "", Room: "", Status: "", Percentage: "" },
+      matrix[0] ?? { Date: "", Student: "", Year: "", Department: "", Hostel: "", Room: "", Status: "", Percentage: "" },
     );
     const html = `<!doctype html><html><head><meta charset="utf-8" /></head><body><table><thead><tr>${headers
       .map((header) => `<th>${escapeHtml(header)}</th>`)
@@ -98,10 +99,11 @@ export function ReportExportPanel({
     doc.text(`PCET Hostel Attendance - ${type}`, 14, 16);
     autoTable(doc, {
       startY: 24,
-      head: [["Date", "Student", "Department", "Hostel", "Room", "Status", "%"]],
+      head: [["Date", "Student", "Year", "Department", "Hostel", "Room", "Status", "%"]],
       body: filteredRows.map((row) => [
         formatDate(row.date),
         row.studentName,
+        row.year,
         row.department,
         row.hostel,
         row.roomNumber,
@@ -180,6 +182,7 @@ export function ReportExportPanel({
           <TableHeader>
             <TableRow>
               <TableHead>Student</TableHead>
+              <TableHead>Year</TableHead>
               <TableHead>Hostel</TableHead>
               <TableHead>Room</TableHead>
               <TableHead>Status</TableHead>
@@ -190,6 +193,7 @@ export function ReportExportPanel({
             {filteredRows.map((row) => (
               <TableRow key={row.id}>
                 <TableCell className="font-medium">{row.studentName}</TableCell>
+                <TableCell>{row.year}</TableCell>
                 <TableCell>{row.hostel}</TableCell>
                 <TableCell>{row.roomNumber}</TableCell>
                 <TableCell>{row.status}</TableCell>
@@ -198,7 +202,7 @@ export function ReportExportPanel({
             ))}
             {!filteredRows.length ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center text-slate-500">
+                <TableCell colSpan={6} className="text-center text-slate-500">
                   No report rows found.
                 </TableCell>
               </TableRow>
