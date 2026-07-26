@@ -406,6 +406,7 @@ function StudentsTable({ students }: { students: Student[] }) {
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
+          <TableHead>Year</TableHead>
           <TableHead>Department</TableHead>
           <TableHead>Room</TableHead>
           <TableHead>Status</TableHead>
@@ -416,13 +417,14 @@ function StudentsTable({ students }: { students: Student[] }) {
         {studentsByYear.map((group) => (
           <Fragment key={group.year}>
             <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
-              <TableCell colSpan={5} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+              <TableCell colSpan={6} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
                 {group.year} Year - {group.students.length} {group.students.length === 1 ? "student" : "students"}
               </TableCell>
             </TableRow>
             {group.students.map((student) => (
               <TableRow key={student.id}>
                 <TableCell className="font-medium">{student.fullName}</TableCell>
+                <TableCell>{student.year}</TableCell>
                 <TableCell>{student.department}</TableCell>
                 <TableCell>{student.roomNumber}</TableCell>
                 <TableCell>
@@ -441,7 +443,7 @@ function StudentsTable({ students }: { students: Student[] }) {
         ))}
         {!students.length ? (
           <TableRow>
-            <TableCell colSpan={5} className="text-center text-slate-500">
+            <TableCell colSpan={6} className="text-center text-slate-500">
               No students found for this hostel.
             </TableCell>
           </TableRow>
