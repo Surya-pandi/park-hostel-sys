@@ -1,4 +1,11 @@
-import { BLOOD_GROUPS, DEPARTMENTS, HOSTELS, RoleSlug, YEARS } from "./constants";
+import {
+  BLOOD_GROUPS,
+  DEPARTMENTS,
+  HOSTELS,
+  LEAVE_STATUSES,
+  RoleSlug,
+  YEARS,
+} from "./constants";
 
 export type HostelName = (typeof HOSTELS)[number];
 export type Department = (typeof DEPARTMENTS)[number];
@@ -34,6 +41,32 @@ export type Student = {
 };
 
 export type AttendanceStatus = "Present" | "Absent" | "Pending" | "Late";
+
+export type LeaveRequestStatus = (typeof LEAVE_STATUSES)[number];
+
+export type LeaveRequest = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  admissionNo: string;
+  year: AcademicYear;
+  department: Department;
+  hostel: HostelName;
+  roomNumber: string;
+  fromDate: string;
+  toDate: string;
+  reason: string;
+  status: LeaveRequestStatus;
+  statusLabel: string;
+  wardenReviewedAt?: string;
+  wardenNote?: string;
+  aoReviewedAt?: string;
+  aoNote?: string;
+  directorReviewedAt?: string;
+  directorNote?: string;
+  createdAt: string;
+  canReview: boolean;
+};
 
 export type AttendanceRecord = {
   id: string;

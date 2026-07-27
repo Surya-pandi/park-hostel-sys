@@ -5,6 +5,7 @@ import {
   DEPARTMENTS,
   EXPORT_FORMATS,
   HOSTELS,
+  LEAVE_STATUSES,
   REPORT_TYPES,
   SHARING_OPTIONS,
   YEARS,
@@ -16,6 +17,11 @@ const phoneSchema = z
   .min(10, "Phone number must have at least 10 digits")
   .max(15, "Phone number is too long")
   .regex(/^[0-9+\-\s()]+$/, "Enter a valid phone number");
+
+const isoDateSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date");
 
 export const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -64,3 +70,26 @@ export const reportRequestSchema = z.object({
 export const qrScanSchema = z.object({
   payload: z.string().min(20, "QR payload is required"),
 });
+
+export const leaveRequestSchema = z
+  .object({
+    fromDate: isoDateSchema,
+    toDate: isoDateSchema,
+    reason: z
+      .string()
+      .trim()
+      .min(10, "Reason must be at least 10 characters")
+      .max(1000, "Reason is too long"),
+  })
+  .refine((value) => value.toDate >= value.fromDate, {
+    message: "To date must be after or same as from date",
+    path: ["toDate"],
+  });
+
+export const leaveDecisionSchema = z.object({
+  requestId: z.string().uuid("Leave request is invalid"),
+  decision: z.enum(["approve", "reject"]),
+  note: z.string().trim().max(500, "Review note is too long").optional(),
+});
+
+export const leaveStatusSchema = z.enum(LEAVE_STATUSES);

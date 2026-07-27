@@ -5,6 +5,7 @@ import {
   CalendarCheck2,
   Camera,
   ClipboardList,
+  FileText,
   GraduationCap,
   Home,
   KeyRound,
@@ -103,6 +104,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
       "View own profile",
       "View own attendance",
       "Generate attendance QR",
+      "Request hostel leave",
       "View notifications",
       "Change password",
     ],
@@ -119,6 +121,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
       "Hostel students",
       "Room statistics",
       "Attendance reports",
+      "Hostel leave approvals",
       "Exports",
     ],
   },
@@ -134,6 +137,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
       "Hostel students",
       "Room statistics",
       "Attendance reports",
+      "Hostel leave approvals",
       "Exports",
     ],
   },
@@ -149,6 +153,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
       "Hostel students",
       "Room statistics",
       "Attendance reports",
+      "Hostel leave approvals",
       "Exports",
     ],
   },
@@ -164,6 +169,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
       "Hostel students",
       "Room statistics",
       "Attendance reports",
+      "Hostel leave approvals",
       "Exports",
     ],
   },
@@ -173,7 +179,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
     route: "/ao",
     tone: "zinc",
     icon: BarChart3,
-    permissions: ["View all hostels", "Attendance reports", "Realtime dashboard"],
+    permissions: ["View all hostels", "Attendance reports", "Leave approvals", "Realtime dashboard"],
   },
   director: {
     slug: "director",
@@ -181,7 +187,7 @@ export const ROLE_CONFIG: Record<RoleSlug, RoleMeta> = {
     route: "/director",
     tone: "blue",
     icon: LineChart,
-    permissions: ["Full system access"],
+    permissions: ["Full system access", "Final leave approvals"],
   },
 };
 
@@ -202,6 +208,12 @@ export const NAVIGATION = [
     roles: ["student", ...WARDEN_ROLES, ...OFFICE_ROLES],
   },
   { label: "Attendance", href: "/attendance", icon: CalendarCheck2, roles: ["student"] },
+  {
+    label: "Leave",
+    href: "/leave",
+    icon: FileText,
+    roles: ["student", ...WARDEN_ROLES, ...OFFICE_ROLES],
+  },
   { label: "Scanner", href: "/scanner", icon: ScanLine, roles: WARDEN_ROLES },
   { label: "Reports", href: "/reports", icon: ClipboardList, roles: [...WARDEN_ROLES, ...OFFICE_ROLES] },
   {
@@ -231,6 +243,7 @@ export const STUDENT_WIDGETS = [
   { label: "Attendance History", icon: ClipboardList },
   { label: "Notifications", icon: Bell },
   { label: "Generate QR", icon: QrCode },
+  { label: "Request Leave", icon: FileText },
   { label: "Profile", icon: UserRound },
   { label: "Change Password", icon: KeyRound },
 ];
@@ -242,7 +255,28 @@ export const WARDEN_FEATURES = [
   { label: "Room Statistics", icon: Building2 },
   { label: "Attendance Reports", icon: ClipboardList },
   { label: "Search Students", icon: ScanLine },
+  { label: "Leave Approvals", icon: FileText },
   { label: "Export CSV", icon: ClipboardList },
   { label: "Export Excel", icon: ClipboardList },
   { label: "Export PDF", icon: ClipboardList },
 ];
+
+export const LEAVE_STATUSES = [
+  "pending_warden",
+  "rejected_warden",
+  "pending_ao",
+  "rejected_ao",
+  "pending_director",
+  "rejected_director",
+  "approved",
+] as const;
+
+export const LEAVE_STATUS_LABELS: Record<(typeof LEAVE_STATUSES)[number], string> = {
+  pending_warden: "Pending Warden",
+  rejected_warden: "Rejected by Warden",
+  pending_ao: "Pending AO",
+  rejected_ao: "Rejected by AO",
+  pending_director: "Pending Director",
+  rejected_director: "Rejected by Director",
+  approved: "Approved",
+};

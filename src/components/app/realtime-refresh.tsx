@@ -26,6 +26,7 @@ export function RealtimeRefresh() {
     const channel = supabase
       .channel("dashboard-refresh")
       .on("postgres_changes", { event: "*", schema: "public", table: "attendance" }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "leave_requests" }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "students" }, refresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, refresh)
       .subscribe();
