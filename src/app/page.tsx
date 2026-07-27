@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, QrCode, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowRight, ShieldCheck, UserPlus } from "lucide-react";
 
+import { CollegeLogo } from "@/components/app/college-logo";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { APP_NAME, COLLEGE_NAME } from "@/lib/constants";
@@ -12,9 +13,7 @@ export default function HomePage() {
       <section className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-4">
-            <div className="grid size-11 place-items-center rounded-md bg-blue-600 text-white">
-              <QrCode className="size-6" />
-            </div>
+            <CollegeLogo />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{COLLEGE_NAME}</p>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">{APP_NAME}</p>

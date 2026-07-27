@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { LogOut, QrCode } from "lucide-react";
+import { LogOut } from "lucide-react";
 
+import { CollegeLogo } from "@/components/app/college-logo";
 import { RealtimeRefresh } from "@/components/app/realtime-refresh";
 import { ThemeToggle } from "@/components/app/theme-toggle";
 import { Badge } from "@/components/ui/badge";
@@ -39,9 +40,7 @@ export function DashboardShell({
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
         <div className="flex min-h-16 items-center gap-3 px-3 py-2 sm:px-6 lg:px-8">
           <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3" aria-label={APP_NAME}>
-            <span className="grid size-9 shrink-0 place-items-center rounded-md bg-blue-600 text-white sm:size-10">
-              <QrCode className="size-5" />
-            </span>
+            <CollegeLogo className="size-10 sm:size-11" />
             <span className="min-w-0">
               <span className="block truncate text-sm font-semibold leading-5">{COLLEGE_NAME}</span>
               <span className="block truncate text-xs text-slate-500 dark:text-slate-400">
