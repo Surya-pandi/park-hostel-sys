@@ -4,6 +4,8 @@ import {
   BLOOD_GROUPS,
   DEPARTMENTS,
   EXPORT_FORMATS,
+  FOOD_MENU_DAY_LABELS,
+  FOOD_MENU_STATUSES,
   HOSTELS,
   LEAVE_STATUSES,
   REPORT_TYPES,
@@ -22,6 +24,12 @@ const isoDateSchema = z
   .string()
   .trim()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date");
+
+const mealTextSchema = z
+  .string()
+  .trim()
+  .min(2, "Enter the food items")
+  .max(500, "Food item text is too long");
 
 export const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -93,3 +101,26 @@ export const leaveDecisionSchema = z.object({
 });
 
 export const leaveStatusSchema = z.enum(LEAVE_STATUSES);
+
+export const foodMenuDaySchema = z.object({
+  day: z.enum(FOOD_MENU_DAY_LABELS),
+  date: isoDateSchema,
+  breakfast: mealTextSchema,
+  lunch: mealTextSchema,
+  snacks: mealTextSchema,
+  dinner: mealTextSchema,
+});
+
+export const foodMenuSchema = z.object({
+  title: z.string().trim().max(120, "Menu title is too long").optional(),
+  weekStart: isoDateSchema,
+  days: z.array(foodMenuDaySchema).length(7, "A weekly menu must contain 7 days"),
+});
+
+export const foodMenuDecisionSchema = z.object({
+  menuId: z.string().uuid("Food menu is invalid"),
+  decision: z.enum(["approve", "reject"]),
+  note: z.string().trim().max(500, "Review note is too long").optional(),
+});
+
+export const foodMenuStatusSchema = z.enum(FOOD_MENU_STATUSES);

@@ -11,7 +11,7 @@ export default async function DirectorPage() {
     <DashboardShell
       role={data.profile?.role ?? "director"}
       title="Director Dashboard"
-      description="Complete analytics, realtime monitoring, attendance heatmaps, trend analysis, notifications, and exportable reports."
+      description="Complete analytics, realtime monitoring, attendance heatmaps, food menu approvals, notifications, and exportable reports."
     >
       <DirectorDashboard data={data} />
     </DashboardShell>

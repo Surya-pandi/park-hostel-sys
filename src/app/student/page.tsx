@@ -11,7 +11,7 @@ export default async function StudentPage() {
     <DashboardShell
       role={data.profile?.role ?? "student"}
       title="Student Dashboard"
-      description="View attendance percentage, today's status, QR generation, history, calendar, profile, notifications, and password settings."
+      description="View attendance percentage, today's status, QR generation, approved food menus, profile, notifications, and password settings."
     >
       <StudentDashboard data={data} />
     </DashboardShell>

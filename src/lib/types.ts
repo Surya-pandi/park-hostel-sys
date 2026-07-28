@@ -1,6 +1,7 @@
 import {
   BLOOD_GROUPS,
   DEPARTMENTS,
+  FOOD_MENU_STATUSES,
   HOSTELS,
   LEAVE_STATUSES,
   RoleSlug,
@@ -43,6 +44,35 @@ export type Student = {
 export type AttendanceStatus = "Present" | "Absent" | "Pending" | "Late";
 
 export type LeaveRequestStatus = (typeof LEAVE_STATUSES)[number];
+
+export type FoodMenuStatus = (typeof FOOD_MENU_STATUSES)[number];
+
+export type FoodMenuDay = {
+  day: string;
+  date: string;
+  breakfast: string;
+  lunch: string;
+  snacks: string;
+  dinner: string;
+};
+
+export type FoodMenu = {
+  id: string;
+  hostelId: string;
+  hostel: HostelName;
+  title: string;
+  weekStart: string;
+  weekEnd: string;
+  items: FoodMenuDay[];
+  status: FoodMenuStatus;
+  statusLabel: string;
+  submittedBy: string;
+  submittedAt: string;
+  directorReviewedAt?: string;
+  directorNote?: string;
+  createdAt: string;
+  canApprove: boolean;
+};
 
 export type LeaveRequest = {
   id: string;

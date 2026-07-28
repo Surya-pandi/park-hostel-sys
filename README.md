@@ -8,6 +8,7 @@ Production-ready Next.js 16 application for PARK COLLEGE OF ENGINEERING AND TECH
 - Supabase Auth and PostgreSQL-ready data access
 - Dynamic signed QR attendance with 60-second expiry, nonce, UUID, and HMAC signature
 - Server-side scan verification, single-use token flow, and one-attendance-per-day rule
+- Weekly food menu submission by wardens with director approval before student visibility
 - Supabase RLS policies for students, wardens, AO, and director
 - Realtime-ready dashboard data model
 - CSV, Excel, and PDF report exports

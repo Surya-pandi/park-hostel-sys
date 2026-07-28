@@ -35,7 +35,7 @@ export default async function WardenPage({
     <DashboardShell
       role={role}
       title={`${data.hostel} Warden Dashboard`}
-      description="Scan student QR codes, monitor today's attendance, inspect room statistics, search hostel students, and export attendance reports."
+      description="Scan student QR codes, monitor today's attendance, inspect room statistics, submit weekly food menus, and export attendance reports."
     >
       <WardenDashboard data={data} />
     </DashboardShell>
