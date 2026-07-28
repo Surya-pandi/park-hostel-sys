@@ -3,8 +3,9 @@
 import autoTable from "jspdf-autotable";
 import jsPDF from "jspdf";
 import { Download, FileSpreadsheet, FileText } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
+import { StatusBadge } from "@/components/app/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { DEPARTMENTS, HOSTELS, REPORT_TYPES } from "@/lib/constants";
+import { DEPARTMENTS, HOSTELS, REPORT_TYPES, YEARS } from "@/lib/constants";
 import type { HostelName, ReportRow } from "@/lib/types";
 import { downloadTextFile, formatDate } from "@/lib/utils";
 
@@ -48,6 +49,14 @@ export function ReportExportPanel({
         return scopedHostelMatch && hostelMatch && departmentMatch;
       }),
     [allowAllHostels, department, hostel, hostelOptions, rows],
+  );
+  const rowsByYear = useMemo(
+    () =>
+      YEARS.map((year) => ({
+        year,
+        rows: filteredRows.filter((row) => row.year === year),
+      })).filter((group) => group.rows.length > 0),
+    [filteredRows],
   );
 
   function toMatrix() {
@@ -183,6 +192,7 @@ export function ReportExportPanel({
             <TableRow>
               <TableHead>Student</TableHead>
               <TableHead>Year</TableHead>
+              <TableHead>Department</TableHead>
               <TableHead>Hostel</TableHead>
               <TableHead>Room</TableHead>
               <TableHead>Status</TableHead>
@@ -190,19 +200,31 @@ export function ReportExportPanel({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredRows.map((row) => (
-              <TableRow key={row.id}>
-                <TableCell className="font-medium">{row.studentName}</TableCell>
-                <TableCell>{row.year}</TableCell>
-                <TableCell>{row.hostel}</TableCell>
-                <TableCell>{row.roomNumber}</TableCell>
-                <TableCell>{row.status}</TableCell>
-                <TableCell className="text-right">{row.percentage}</TableCell>
-              </TableRow>
+            {rowsByYear.map((group) => (
+              <Fragment key={group.year}>
+                <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
+                  <TableCell colSpan={7} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                    {group.year} Year - {group.rows.length} {group.rows.length === 1 ? "student" : "students"}
+                  </TableCell>
+                </TableRow>
+                {group.rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell className="font-medium">{row.studentName}</TableCell>
+                    <TableCell>{row.year}</TableCell>
+                    <TableCell>{row.department}</TableCell>
+                    <TableCell>{row.hostel}</TableCell>
+                    <TableCell>{row.roomNumber}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={row.status} />
+                    </TableCell>
+                    <TableCell className="text-right">{row.percentage}</TableCell>
+                  </TableRow>
+                ))}
+              </Fragment>
             ))}
             {!filteredRows.length ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-slate-500">
+                <TableCell colSpan={7} className="text-center text-slate-500">
                   No report rows found.
                 </TableCell>
               </TableRow>

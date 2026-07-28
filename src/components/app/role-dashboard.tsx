@@ -22,13 +22,13 @@ import {
   HostelBarChart,
 } from "@/components/app/attendance-chart";
 import { KpiCard } from "@/components/app/kpi-card";
-import { ManualAttendanceButton } from "@/components/app/manual-attendance-button";
 import { NotificationsList } from "@/components/app/notifications-list";
 import { ProfileCard } from "@/components/app/profile-card";
 import { QrGenerator } from "@/components/app/qr-generator";
 import { ReportExportPanel } from "@/components/app/report-export-panel";
 import { ScannerPanel } from "@/components/app/scanner-panel";
 import { StatusBadge } from "@/components/app/status-badge";
+import { WardenStudentsTable } from "@/components/app/students-table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -45,11 +45,12 @@ import type {
   StudentDashboardData,
   WardenDashboardData,
 } from "@/lib/live-data";
-import { YEARS } from "@/lib/constants";
+import { HOSTELS, YEARS } from "@/lib/constants";
 import {
   AttendanceRecord,
   HostelAnalytics,
   Profile,
+  ReportRow,
   RoomStatistic,
   Student,
 } from "@/lib/types";
@@ -173,17 +174,21 @@ export function WardenDashboard({ data }: { data: WardenDashboardData }) {
       </AnimatedSection>
 
       <AnimatedSection delay={0.1}>
+        <AbsentStudentsCard students={data.students} title={`${data.hostel} Absent Students`} />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.15}>
         <ScannerPanel />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.15} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+      <AnimatedSection delay={0.2} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
         <Card>
           <CardHeader>
             <CardTitle>{data.hostel} Students</CardTitle>
-            <CardDescription>Roster from Supabase grouped by academic year.</CardDescription>
+            <CardDescription>Roster from Supabase grouped by academic year with editable details.</CardDescription>
           </CardHeader>
           <CardContent>
-            <StudentsTable students={data.students} />
+            <WardenStudentsTable students={data.students} />
           </CardContent>
         </Card>
 
@@ -252,6 +257,10 @@ export function AoDashboard({ data }: { data: OfficeDashboardData }) {
       </AnimatedSection>
 
       <AnimatedSection delay={0.1}>
+        <AbsentReportRowsCard rows={data.reportRows} title="Absent Students by Hostel" />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.15}>
         <ReportExportPanel rows={data.reportRows} />
       </AnimatedSection>
     </div>
@@ -312,8 +321,12 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
       </AnimatedSection>
 
       <AnimatedSection delay={0.1} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-        <ReportExportPanel rows={data.reportRows} />
+        <AbsentReportRowsCard rows={data.reportRows} title="Absent Students by Hostel" />
         <NotificationsList items={data.notifications} />
+      </AnimatedSection>
+
+      <AnimatedSection delay={0.15}>
+        <ReportExportPanel rows={data.reportRows} />
       </AnimatedSection>
     </div>
   );
@@ -321,6 +334,10 @@ export function DirectorDashboard({ data }: { data: OfficeDashboardData }) {
 
 function isPresentToday(student: Student) {
   return student.todayStatus === "Present" || student.todayStatus === "Late";
+}
+
+function isReportRowPresent(row: ReportRow) {
+  return row.status === "Present" || row.status === "Late";
 }
 
 function YearWisePresentDashboard({ students }: { students: Student[] }) {
@@ -395,64 +412,6 @@ function YearWisePresentDashboard({ students }: { students: Student[] }) {
   );
 }
 
-function StudentsTable({ students }: { students: Student[] }) {
-  const studentsByYear = YEARS.map((year) => ({
-    year,
-    students: students.filter((student) => student.year === year),
-  })).filter((group) => group.students.length > 0);
-
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Year</TableHead>
-          <TableHead>Department</TableHead>
-          <TableHead>Room</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Action</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {studentsByYear.map((group) => (
-          <Fragment key={group.year}>
-            <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
-              <TableCell colSpan={6} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-                {group.year} Year - {group.students.length} {group.students.length === 1 ? "student" : "students"}
-              </TableCell>
-            </TableRow>
-            {group.students.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell className="font-medium">{student.fullName}</TableCell>
-                <TableCell>{student.year}</TableCell>
-                <TableCell>{student.department}</TableCell>
-                <TableCell>{student.roomNumber}</TableCell>
-                <TableCell>
-                  <StatusBadge status={student.todayStatus} />
-                </TableCell>
-                <TableCell>
-                  <ManualAttendanceButton
-                    studentId={student.id}
-                    studentName={student.fullName}
-                    status={student.todayStatus}
-                  />
-                </TableCell>
-              </TableRow>
-            ))}
-          </Fragment>
-        ))}
-        {!students.length ? (
-          <TableRow>
-            <TableCell colSpan={6} className="text-center text-slate-500">
-              No students found for this hostel.
-            </TableCell>
-          </TableRow>
-        ) : null}
-      </TableBody>
-    </Table>
-  );
-}
-
 function AttendanceHistoryTable({ records }: { records: AttendanceRecord[] }) {
   return (
     <Table>
@@ -484,6 +443,127 @@ function AttendanceHistoryTable({ records }: { records: AttendanceRecord[] }) {
         ) : null}
       </TableBody>
     </Table>
+  );
+}
+
+function AbsentStudentsCard({
+  students,
+  title,
+}: {
+  students: Student[];
+  title: string;
+}) {
+  const absentStudents = students.filter((student) => !isPresentToday(student));
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>Students without a present or late scan today.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Year</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Room</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Phone</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {absentStudents.map((student) => (
+              <TableRow key={student.id}>
+                <TableCell className="font-medium">{student.fullName}</TableCell>
+                <TableCell>{student.year}</TableCell>
+                <TableCell>{student.department}</TableCell>
+                <TableCell>{student.roomNumber}</TableCell>
+                <TableCell>
+                  <StatusBadge status={student.todayStatus} />
+                </TableCell>
+                <TableCell>{student.studentPhone}</TableCell>
+              </TableRow>
+            ))}
+            {!absentStudents.length ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-slate-500">
+                  No absent students found today.
+                </TableCell>
+              </TableRow>
+            ) : null}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AbsentReportRowsCard({
+  rows,
+  title,
+}: {
+  rows: ReportRow[];
+  title: string;
+}) {
+  const absentRows = rows.filter((row) => !isReportRowPresent(row));
+  const groups = HOSTELS.map((hostel) => ({
+    hostel,
+    rows: absentRows.filter((row) => row.hostel === hostel),
+  })).filter((group) => group.rows.length > 0);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>Students without a present or late scan today.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Student</TableHead>
+              <TableHead>Year</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Hostel</TableHead>
+              <TableHead>Room</TableHead>
+              <TableHead>Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {groups.map((group) => (
+              <Fragment key={group.hostel}>
+                <TableRow className="bg-slate-50/80 hover:bg-slate-50/80 dark:bg-slate-900/70 dark:hover:bg-slate-900/70">
+                  <TableCell colSpan={6} className="py-2 text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                    {group.hostel} - {group.rows.length} absent
+                  </TableCell>
+                </TableRow>
+                {group.rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell className="font-medium">{row.studentName}</TableCell>
+                    <TableCell>{row.year}</TableCell>
+                    <TableCell>{row.department}</TableCell>
+                    <TableCell>{row.hostel}</TableCell>
+                    <TableCell>{row.roomNumber}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={row.status} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </Fragment>
+            ))}
+            {!absentRows.length ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-slate-500">
+                  No absent students found today.
+                </TableCell>
+              </TableRow>
+            ) : null}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 

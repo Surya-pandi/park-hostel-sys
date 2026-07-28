@@ -4,7 +4,15 @@ import { DepartmentBarChart, HostelBarChart } from "@/components/app/attendance-
 import { DashboardShell } from "@/components/app/dashboard-shell";
 import { ReportExportPanel } from "@/components/app/report-export-panel";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DEPARTMENTS, ROLE_CONFIG, type RoleSlug } from "@/lib/constants";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { DEPARTMENTS, ROLE_CONFIG, YEARS, type RoleSlug } from "@/lib/constants";
 import { getOfficeDashboardData } from "@/lib/live-data";
 import type { DepartmentAnalytics, HostelAnalytics, HostelName, ReportRow } from "@/lib/types";
 import { percent } from "@/lib/utils";
@@ -30,6 +38,21 @@ function buildDepartmentSnapshot(rows: ReportRow[]): DepartmentAnalytics[] {
       attendanceRate: percent(presentToday, departmentRows.length),
     };
   }).filter((item) => item.students > 0);
+}
+
+function buildYearSnapshot(rows: ReportRow[]) {
+  return YEARS.map((year) => {
+    const yearRows = rows.filter((row) => row.year === year);
+    const presentToday = yearRows.filter((row) => isAttended(row.status)).length;
+
+    return {
+      year,
+      totalStudents: yearRows.length,
+      presentToday,
+      absentToday: Math.max(0, yearRows.length - presentToday),
+      attendanceRate: percent(presentToday, yearRows.length),
+    };
+  }).filter((item) => item.totalStudents > 0);
 }
 
 function scopeReportsForRole(
@@ -83,6 +106,7 @@ export default async function ReportsPage() {
       }
     >
       <div className="space-y-5">
+        <YearWiseStudentSnapshot rows={reportRows} />
         <ReportExportPanel
           rows={reportRows}
           allowAllHostels={!assignedHostel}
@@ -118,5 +142,49 @@ export default async function ReportsPage() {
         </div>
       </div>
     </DashboardShell>
+  );
+}
+
+function YearWiseStudentSnapshot({ rows }: { rows: ReportRow[] }) {
+  const groups = buildYearSnapshot(rows);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Year Wise Student Details</CardTitle>
+        <CardDescription>Total, present, and absent students grouped by academic year.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Year</TableHead>
+              <TableHead>Total Students</TableHead>
+              <TableHead>Present Today</TableHead>
+              <TableHead>Absent Today</TableHead>
+              <TableHead className="text-right">Attendance</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {groups.map((group) => (
+              <TableRow key={group.year}>
+                <TableCell className="font-medium">{group.year} Year</TableCell>
+                <TableCell>{group.totalStudents}</TableCell>
+                <TableCell>{group.presentToday}</TableCell>
+                <TableCell>{group.absentToday}</TableCell>
+                <TableCell className="text-right">{group.attendanceRate}%</TableCell>
+              </TableRow>
+            ))}
+            {!groups.length ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-slate-500">
+                  No students found for this report scope.
+                </TableCell>
+              </TableRow>
+            ) : null}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }

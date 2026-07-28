@@ -66,6 +66,20 @@ export const studentRegistrationSchema = z.object({
   parentPhone: phoneSchema,
 });
 
+export const studentDetailsUpdateSchema = z.object({
+  studentId: z.string().uuid("Student is invalid"),
+  admissionNo: z.string().trim().max(50, "Admission number is too long").optional(),
+  fullName: z.string().trim().min(3, "Full name is required"),
+  dateOfBirth: isoDateSchema,
+  year: z.enum(YEARS),
+  department: z.enum(DEPARTMENTS),
+  roomNumber: z.string().trim().min(1, "Room number is required"),
+  sharing: z.enum(SHARING_OPTIONS),
+  bloodGroup: z.enum(BLOOD_GROUPS),
+  studentPhone: phoneSchema,
+  parentPhone: phoneSchema,
+});
+
 export const reportRequestSchema = z.object({
   type: z.enum(REPORT_TYPES),
   hostel: z.enum(HOSTELS).or(z.literal("All Hostels")),
