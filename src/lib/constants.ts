@@ -235,12 +235,13 @@ export const NAVIGATION = [
     roles: ["student", ...WARDEN_ROLES, "director"],
   },
   { label: "Scanner", href: "/scanner", icon: ScanLine, roles: WARDEN_ROLES },
+  { label: "Students", href: "$students", icon: UsersRound, roles: WARDEN_ROLES },
   { label: "Reports", href: "/reports", icon: ClipboardList, roles: [...WARDEN_ROLES, ...OFFICE_ROLES] },
   {
     label: "Notifications",
     href: "/notifications",
     icon: Bell,
-    roles: ["student", ...WARDEN_ROLES, ...OFFICE_ROLES],
+    roles: ["student", ...OFFICE_ROLES],
   },
   {
     label: "Profile",

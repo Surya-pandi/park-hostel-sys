@@ -33,6 +33,18 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const roleMeta = ROLE_CONFIG[role];
   const navigation = NAVIGATION.filter((item) => item.roles.includes(role));
+  const resolveNavigationHref = (href: string) => {
+    if (href === "$dashboard") {
+      return roleMeta.route;
+    }
+
+    if (href === "$students") {
+      const [pathname, search] = roleMeta.route.split("?");
+      return `${pathname}/students${search ? `?${search}` : ""}`;
+    }
+
+    return href;
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-slate-50">
@@ -67,7 +79,7 @@ export function DashboardShell({
           {navigation.map((item) => (
             <Link
               key={item.href}
-              href={item.href === "$dashboard" ? roleMeta.route : item.href}
+              href={resolveNavigationHref(item.href)}
               className="inline-flex min-w-max items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
             >
               <item.icon className="size-4" />
@@ -83,7 +95,7 @@ export function DashboardShell({
             {navigation.map((item) => (
               <Link
                 key={item.href}
-                href={item.href === "$dashboard" ? roleMeta.route : item.href}
+                href={resolveNavigationHref(item.href)}
                 className="flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-900 dark:hover:text-white"
               >
                 <item.icon className="size-4" />

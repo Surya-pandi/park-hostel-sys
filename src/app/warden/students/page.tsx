@@ -1,5 +1,5 @@
 import { DashboardShell } from "@/components/app/dashboard-shell";
-import { WardenDashboard } from "@/components/app/role-dashboard";
+import { WardenStudentsDashboard } from "@/components/app/role-dashboard";
 import { getWardenDashboardData } from "@/lib/live-data";
 import {
   getResolvedWardenRole,
@@ -8,7 +8,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-export default async function WardenPage({
+export default async function WardenStudentsPage({
   searchParams,
 }: {
   searchParams: Promise<{ hostel?: string }>;
@@ -21,10 +21,10 @@ export default async function WardenPage({
   return (
     <DashboardShell
       role={role}
-      title={`${data.hostel} Warden Dashboard`}
-      description="Monitor today's hostel attendance, year-wise presence, and students who still need verification."
+      title={`${data.hostel} Students`}
+      description="Manage assigned hostel students, room occupancy, and daily manual attendance actions."
     >
-      <WardenDashboard data={data} />
+      <WardenStudentsDashboard data={data} />
     </DashboardShell>
   );
 }

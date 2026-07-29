@@ -26,7 +26,6 @@ import { NotificationsList } from "@/components/app/notifications-list";
 import { ProfileCard } from "@/components/app/profile-card";
 import { QrGenerator } from "@/components/app/qr-generator";
 import { ReportExportPanel } from "@/components/app/report-export-panel";
-import { ScannerPanel } from "@/components/app/scanner-panel";
 import { StatusBadge } from "@/components/app/status-badge";
 import { WardenStudentsTable } from "@/components/app/students-table";
 import { Badge } from "@/components/ui/badge";
@@ -134,8 +133,6 @@ export function StudentDashboard({ data }: { data: StudentDashboardData }) {
 }
 
 export function WardenDashboard({ data }: { data: WardenDashboardData }) {
-  const present = data.students.filter(isPresentToday).length;
-
   return (
     <div className="space-y-4 sm:space-y-5">
       <AnimatedSection className="grid gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
@@ -176,25 +173,27 @@ export function WardenDashboard({ data }: { data: WardenDashboardData }) {
       <AnimatedSection delay={0.1}>
         <AbsentStudentsCard students={data.students} title={`${data.hostel} Absent Students`} />
       </AnimatedSection>
-
-      <AnimatedSection delay={0.15}>
-        <ScannerPanel />
-      </AnimatedSection>
-
-      <AnimatedSection delay={0.2} className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
-        <Card>
-          <CardHeader>
-            <CardTitle>{data.hostel} Students</CardTitle>
-            <CardDescription>Roster from Supabase grouped by academic year with editable details.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <WardenStudentsTable students={data.students} />
-          </CardContent>
-        </Card>
-
-        <RoomStatsCard hostel={data.hostel} present={present} rooms={data.roomStatistics} />
-      </AnimatedSection>
     </div>
+  );
+}
+
+export function WardenStudentsDashboard({ data }: { data: WardenDashboardData }) {
+  const present = data.students.filter(isPresentToday).length;
+
+  return (
+    <AnimatedSection className="grid gap-4 sm:gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(320px,420px)]">
+      <Card>
+        <CardHeader>
+          <CardTitle>{data.hostel} Students</CardTitle>
+          <CardDescription>Add, edit, and delete Supabase student records grouped by academic year.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <WardenStudentsTable students={data.students} />
+        </CardContent>
+      </Card>
+
+      <RoomStatsCard hostel={data.hostel} present={present} rooms={data.roomStatistics} />
+    </AnimatedSection>
   );
 }
 

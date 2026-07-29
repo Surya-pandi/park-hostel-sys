@@ -66,10 +66,17 @@ export const studentRegistrationSchema = z.object({
   parentPhone: phoneSchema,
 });
 
+export const wardenStudentCreateSchema = studentRegistrationSchema
+  .omit({ hostel: true })
+  .extend({
+    admissionNo: z.string().trim().max(50, "Admission number is too long").optional(),
+  });
+
 export const studentDetailsUpdateSchema = z.object({
   studentId: z.string().uuid("Student is invalid"),
   admissionNo: z.string().trim().max(50, "Admission number is too long").optional(),
   fullName: z.string().trim().min(3, "Full name is required"),
+  email: z.string().trim().email("Enter a valid email address"),
   dateOfBirth: isoDateSchema,
   year: z.enum(YEARS),
   department: z.enum(DEPARTMENTS),
@@ -78,6 +85,10 @@ export const studentDetailsUpdateSchema = z.object({
   bloodGroup: z.enum(BLOOD_GROUPS),
   studentPhone: phoneSchema,
   parentPhone: phoneSchema,
+});
+
+export const studentDeleteSchema = z.object({
+  studentId: z.string().uuid("Student is invalid"),
 });
 
 export const reportRequestSchema = z.object({

@@ -1,10 +1,10 @@
 "use client";
 
-import { RefreshCw, ShieldCheck } from "lucide-react";
-import { useCallback, useEffect, useState, useTransition } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { Clipboard, RefreshCw, ShieldCheck } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState, useTransition } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 
-import { generateQrTokenAction, QrActionResult } from "@/app/actions/attendance";
+import { generateQrTokenAction, type QrActionResult } from "@/app/actions/attendance";
 import { StatusBadge } from "@/components/app/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,12 +13,22 @@ import { ATTENDANCE_WINDOW } from "@/lib/constants";
 export function QrGenerator() {
   const [result, setResult] = useState<QrActionResult | null>(null);
   const [now, setNow] = useState(0);
+  const [copyMessage, setCopyMessage] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const refreshQr = useCallback(() => {
     startTransition(async () => {
-      const next = await generateQrTokenAction();
-      setResult(next);
+      try {
+        const next = await generateQrTokenAction();
+        setResult(next);
+        setCopyMessage("");
+      } catch {
+        setResult({
+          ok: false,
+          message: "QR generation failed. Refresh and try again.",
+          windowOpen: false,
+        });
+      }
       setNow(Date.now());
     });
   }, []);
@@ -37,6 +47,38 @@ export function QrGenerator() {
   const secondsLeft = result?.expiresAt
     ? Math.max(0, Math.ceil((new Date(result.expiresAt).getTime() - now) / 1000))
     : 0;
+  const qrPayload = result?.payload ?? "";
+  const qrCode = useMemo(
+    () =>
+      qrPayload ? (
+        <QRCodeCanvas
+          key={qrPayload}
+          value={qrPayload}
+          size={384}
+          level="Q"
+          marginSize={4}
+          bgColor="#ffffff"
+          fgColor="#020617"
+          className="h-auto w-full max-w-80 rounded-md bg-white sm:max-w-96"
+          style={{ height: "auto", width: "100%", imageRendering: "pixelated" }}
+          title="Dynamic attendance QR code"
+        />
+      ) : null,
+    [qrPayload],
+  );
+
+  const copyPayload = useCallback(async () => {
+    if (!qrPayload) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(qrPayload);
+      setCopyMessage("Payload copied.");
+    } catch {
+      setCopyMessage("Copy failed.");
+    }
+  }, [qrPayload]);
 
   return (
     <Card>
@@ -51,15 +93,9 @@ export function QrGenerator() {
       </CardHeader>
       <CardContent>
         <div className="grid gap-5 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-6">
-          <div className="grid place-items-center rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-900 sm:p-6">
-            {result?.payload ? (
-              <QRCodeSVG
-                value={result.payload}
-                size={384}
-                level="H"
-                includeMargin
-                className="h-auto w-full max-w-80 sm:max-w-96"
-              />
+          <div className="grid place-items-center rounded-lg border border-slate-200 bg-white p-3 shadow-inner dark:border-slate-800 sm:p-6">
+            {qrCode ? (
+              qrCode
             ) : (
               <div className="grid aspect-square w-full max-w-80 place-items-center rounded-md bg-slate-100 text-sm text-slate-500 dark:bg-slate-800 sm:max-w-96">
                 {isPending ? "Generating QR..." : "QR unavailable"}
@@ -95,10 +131,28 @@ export function QrGenerator() {
                 {result.message}
               </p>
             ) : null}
-            <Button type="button" className="w-full sm:w-auto" onClick={refreshQr} disabled={isPending}>
-              <RefreshCw className="size-4" />
-              Refresh QR
-            </Button>
+            <div className="flex flex-col gap-2 min-[420px]:flex-row min-[420px]:items-center">
+              <Button
+                type="button"
+                className="w-full min-[420px]:w-auto"
+                onClick={refreshQr}
+                disabled={isPending}
+              >
+                <RefreshCw className="size-4" />
+                Refresh QR
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full min-[420px]:w-auto"
+                onClick={copyPayload}
+                disabled={!qrPayload}
+              >
+                <Clipboard className="size-4" />
+                Copy Payload
+              </Button>
+            </div>
+            {copyMessage ? <p className="text-sm text-slate-500 dark:text-slate-400">{copyMessage}</p> : null}
           </div>
         </div>
       </CardContent>
