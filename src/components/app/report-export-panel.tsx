@@ -30,6 +30,7 @@ type ReportExportPanelProps = {
 
 const ALL_HOSTELS = "All Hostels";
 const ALL_DEPARTMENTS = "All Departments";
+const ALL_YEARS = "All Years";
 
 export function ReportExportPanel({
   rows,
@@ -39,6 +40,7 @@ export function ReportExportPanel({
   const [type, setType] = useState("Daily");
   const [hostel, setHostel] = useState(allowAllHostels ? ALL_HOSTELS : hostelOptions[0] ?? HOSTELS[0]);
   const [department, setDepartment] = useState(ALL_DEPARTMENTS);
+  const [year, setYear] = useState(ALL_YEARS);
 
   const filteredRows = useMemo(
     () =>
@@ -46,9 +48,10 @@ export function ReportExportPanel({
         const scopedHostelMatch = hostelOptions.includes(row.hostel);
         const hostelMatch = allowAllHostels && hostel === ALL_HOSTELS ? true : row.hostel === hostel;
         const departmentMatch = department === ALL_DEPARTMENTS || row.department === department;
-        return scopedHostelMatch && hostelMatch && departmentMatch;
+        const yearMatch = year === ALL_YEARS || row.year === year;
+        return scopedHostelMatch && hostelMatch && departmentMatch && yearMatch;
       }),
-    [allowAllHostels, department, hostel, hostelOptions, rows],
+    [allowAllHostels, department, hostel, hostelOptions, rows, year],
   );
   const rowsByYear = useMemo(
     () =>
@@ -130,12 +133,12 @@ export function ReportExportPanel({
         <CardTitle>Attendance Reports</CardTitle>
         <CardDescription>
           {allowAllHostels
-            ? "Filter by period, hostel, and department; export CSV, Excel, or PDF."
-            : "Filter by period and department for the assigned hostel; export CSV, Excel, or PDF."}
+            ? "Filter by period, hostel, department, and year; export CSV, Excel, or PDF."
+            : "Filter by period, department, and year for the assigned hostel; export CSV, Excel, or PDF."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <div className="space-y-2">
             <Label htmlFor="type">Report type</Label>
             <Select id="type" value={type} onChange={(event) => setType(event.target.value)}>
@@ -168,6 +171,17 @@ export function ReportExportPanel({
               {DEPARTMENTS.map((departmentName) => (
                 <option key={departmentName} value={departmentName}>
                   {departmentName}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="year">Year</Label>
+            <Select id="year" value={year} onChange={(event) => setYear(event.target.value)}>
+              <option>{ALL_YEARS}</option>
+              {YEARS.map((yearName) => (
+                <option key={yearName} value={yearName}>
+                  {yearName} Year
                 </option>
               ))}
             </Select>
