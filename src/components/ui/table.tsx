@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 export function Table({ className, ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div className="w-full overflow-x-auto rounded-md">
+    <div className="max-w-full overflow-x-auto rounded-md">
       <table className={cn("w-full min-w-max caption-bottom text-sm", className)} {...props} />
     </div>
   );

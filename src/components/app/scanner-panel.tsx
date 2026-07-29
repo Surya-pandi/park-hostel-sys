@@ -209,9 +209,9 @@ export function ScannerPanel() {
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,420px)_1fr]">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,420px)_minmax(0,1fr)]">
             <div className="grid min-h-72 place-items-center rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-800 dark:bg-slate-900 sm:min-h-[28rem]">
-              <div id="qr-reader" className="w-full max-w-md" />
+              <div id="qr-reader" className="w-full max-w-md overflow-hidden" />
               {!active ? (
                 <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
                   <Camera className="size-8" />
@@ -220,7 +220,7 @@ export function ScannerPanel() {
               ) : null}
             </div>
             <div className="space-y-3">
-              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
                 <div className="space-y-2">
                   <Label htmlFor="camera">Camera</Label>
                   <Select

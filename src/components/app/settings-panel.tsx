@@ -15,7 +15,7 @@ export function SettingsPanel() {
   const [state, formAction, isPending] = useActionState(changePasswordAction, initialState);
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
       <Card>
         <CardHeader>
           <CardTitle>Change Password</CardTitle>

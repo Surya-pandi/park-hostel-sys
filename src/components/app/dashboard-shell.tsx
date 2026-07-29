@@ -89,7 +89,7 @@ export function DashboardShell({
         </nav>
       </header>
 
-      <div className="grid lg:grid-cols-[260px_1fr]">
+      <div className="grid lg:grid-cols-[260px_minmax(0,1fr)]">
         <aside className="hidden min-h-[calc(100vh-4rem)] border-r border-slate-200 bg-white px-4 py-6 dark:border-slate-800 dark:bg-slate-950 lg:block">
           <nav className="space-y-1">
             {navigation.map((item) => (
@@ -121,7 +121,7 @@ export function DashboardShell({
                 {description}
               </p>
             </div>
-            {action}
+            {action ? <div className="w-full shrink-0 sm:w-auto">{action}</div> : null}
           </div>
           {children}
         </main>

@@ -12,7 +12,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-slate-50 text-slate-950 dark:bg-slate-950 dark:text-white">
       <section className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
         <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-5 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-3 sm:gap-4">
             <CollegeLogo />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold">{COLLEGE_NAME}</p>
@@ -32,19 +32,22 @@ export default function HomePage() {
                 <ShieldCheck className="size-4 text-blue-600" />
                 Supabase-backed hostel attendance
               </div>
-              <h1 className="text-4xl font-semibold tracking-normal sm:text-5xl lg:text-6xl">
+              <h1 className="text-3xl font-semibold tracking-normal sm:text-5xl lg:text-6xl">
                 PCET Hostel Attendance
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-300 sm:text-lg">
                 Sign in to access your role-based attendance workspace. Student, warden, AO, and
                 director screens now read directly from Supabase.
               </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Link href="/login" className={cn(buttonVariants({ size: "lg" }))}>
+              <div className="mt-7 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+                <Link href="/login" className={cn(buttonVariants({ size: "lg" }), "w-full min-[420px]:w-auto")}>
                   Login
                   <ArrowRight className="size-4" />
                 </Link>
-                <Link href="/register" className={cn(buttonVariants({ variant: "outline", size: "lg" }))}>
+                <Link
+                  href="/register"
+                  className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full min-[420px]:w-auto")}
+                >
                   <UserPlus className="size-4" />
                   Register Student
                 </Link>

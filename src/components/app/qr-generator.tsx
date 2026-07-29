@@ -92,7 +92,7 @@ export function QrGenerator() {
         <StatusBadge status={result?.windowOpen ? "Open" : "Closed"} />
       </CardHeader>
       <CardContent>
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,440px)_1fr] lg:gap-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,440px)_minmax(0,1fr)] lg:gap-6">
           <div className="grid place-items-center rounded-lg border border-slate-200 bg-white p-3 shadow-inner dark:border-slate-800 sm:p-6">
             {qrCode ? (
               qrCode

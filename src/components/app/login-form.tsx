@@ -85,7 +85,7 @@ export function LoginForm() {
             {isPending ? "Signing in..." : "Sign in"}
           </Button>
         </form>
-        <div className="mt-4 flex items-center justify-between text-sm">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-sm">
           <Link href="/forgot-password" className="text-blue-600 hover:underline">
             Forgot password
           </Link>
