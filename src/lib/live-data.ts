@@ -148,7 +148,7 @@ function toAttendanceStatus(value: string | null | undefined): AttendanceStatus 
     return "Late";
   }
 
-  return "Pending";
+  return "Absent";
 }
 
 function isAttended(status: AttendanceStatus) {
@@ -367,7 +367,7 @@ function buildCalendar(attendanceRows: AttendanceRow[], days = 28): CalendarDay[
 
     return {
       date,
-      status: byDate.get(date) ?? "Pending",
+      status: byDate.get(date) ?? "Absent",
     };
   });
 }
@@ -391,7 +391,7 @@ function buildStudents(studentRows: StudentRow[], attendanceRows: AttendanceRow[
   const percentages = attendancePercentages(attendanceRows);
 
   return studentRows.map((row) =>
-    toStudent(row, todayStatus.get(row.id) ?? "Pending", percentages.get(row.id) ?? 0),
+    toStudent(row, todayStatus.get(row.id) ?? "Absent", percentages.get(row.id) ?? 0),
   );
 }
 

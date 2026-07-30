@@ -31,6 +31,13 @@ type ReportExportPanelProps = {
 const ALL_HOSTELS = "All Hostels";
 const ALL_DEPARTMENTS = "All Departments";
 const ALL_YEARS = "All Years";
+const ALL_STATUSES = "All Statuses";
+const REPORT_STATUS_FILTERS = [ALL_STATUSES, "Present", "Absent"] as const;
+type ReportStatusFilter = (typeof REPORT_STATUS_FILTERS)[number];
+
+function isPresentStatus(status: ReportRow["status"]) {
+  return status === "Present" || status === "Late";
+}
 
 export function ReportExportPanel({
   rows,
@@ -41,6 +48,7 @@ export function ReportExportPanel({
   const [hostel, setHostel] = useState(allowAllHostels ? ALL_HOSTELS : hostelOptions[0] ?? HOSTELS[0]);
   const [department, setDepartment] = useState(ALL_DEPARTMENTS);
   const [year, setYear] = useState(ALL_YEARS);
+  const [status, setStatus] = useState<ReportStatusFilter>(ALL_STATUSES);
 
   const filteredRows = useMemo(
     () =>
@@ -49,9 +57,12 @@ export function ReportExportPanel({
         const hostelMatch = allowAllHostels && hostel === ALL_HOSTELS ? true : row.hostel === hostel;
         const departmentMatch = department === ALL_DEPARTMENTS || row.department === department;
         const yearMatch = year === ALL_YEARS || row.year === year;
-        return scopedHostelMatch && hostelMatch && departmentMatch && yearMatch;
+        const statusMatch =
+          status === ALL_STATUSES ||
+          (status === "Present" ? isPresentStatus(row.status) : !isPresentStatus(row.status));
+        return scopedHostelMatch && hostelMatch && departmentMatch && yearMatch && statusMatch;
       }),
-    [allowAllHostels, department, hostel, hostelOptions, rows, year],
+    [allowAllHostels, department, hostel, hostelOptions, rows, status, year],
   );
   const rowsByYear = useMemo(
     () =>
@@ -133,12 +144,12 @@ export function ReportExportPanel({
         <CardTitle>Attendance Reports</CardTitle>
         <CardDescription>
           {allowAllHostels
-            ? "Filter by period, hostel, department, and year; export CSV, Excel, or PDF."
-            : "Filter by period, department, and year for the assigned hostel; export CSV, Excel, or PDF."}
+            ? "Filter by period, hostel, department, year, and status; export CSV, Excel, or PDF."
+            : "Filter by period, department, year, and status for the assigned hostel; export CSV, Excel, or PDF."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <div className="space-y-2">
             <Label htmlFor="type">Report type</Label>
             <Select id="type" value={type} onChange={(event) => setType(event.target.value)}>
@@ -182,6 +193,20 @@ export function ReportExportPanel({
               {YEARS.map((yearName) => (
                 <option key={yearName} value={yearName}>
                   {yearName} Year
+                </option>
+              ))}
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select
+              id="status"
+              value={status}
+              onChange={(event) => setStatus(event.target.value as ReportStatusFilter)}
+            >
+              {REPORT_STATUS_FILTERS.map((statusName) => (
+                <option key={statusName} value={statusName}>
+                  {statusName}
                 </option>
               ))}
             </Select>

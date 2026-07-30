@@ -41,7 +41,7 @@ export type Student = {
   todayStatus: AttendanceStatus;
 };
 
-export type AttendanceStatus = "Present" | "Absent" | "Pending" | "Late";
+export type AttendanceStatus = "Present" | "Absent" | "Late";
 
 export type LeaveRequestStatus = (typeof LEAVE_STATUSES)[number];
 

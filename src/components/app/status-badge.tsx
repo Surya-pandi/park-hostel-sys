@@ -9,7 +9,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   const variant =
     status === "Present" || status === "Open" || status === "Live"
       ? "success"
-      : status === "Late" || status === "Pending"
+      : status === "Late"
         ? "warning"
         : status === "Absent" || status === "Closed"
           ? "danger"
